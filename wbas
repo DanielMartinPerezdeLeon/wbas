@@ -1,0 +1,6 @@
+#!/home/ubuntu/Desktop/WorldBankAnalyticsSuite/.venv/bin/python
+
+from utils.commands import main
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,4 @@
+pandas
+wbgapi
+psycopg2-binary
+sqlalchemy
