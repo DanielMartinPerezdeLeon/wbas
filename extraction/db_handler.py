@@ -1,5 +1,8 @@
 import logging
-from sqlalchemy.schema import CreateSchema
+
+from sqlalchemy import MetaData
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.schema import CreateSchema, DropTable, Table
 from sqlalchemy.engine import create_engine, Engine
 import pandas as pd
 
@@ -23,3 +26,13 @@ def create_schema():
         logging.debug(f'Creating schema {config.schema_name} if not exists')
         con.execute(CreateSchema(config.schema_name, if_not_exists=True))
         con.commit()
+
+
+def delete_table(table_name: str):
+    logging.debug(f'Dropping table {table_name} if exists')
+    base = declarative_base()
+    metadata = MetaData()
+    metadata.reflect(bind=get_engine(), schema=config.schema_name)
+    table = metadata.tables[f'{config.schema_name}.{table_name}']
+    if table_name is not None:
+        base.metadata.drop_all(get_engine(), [table], checkfirst=True)

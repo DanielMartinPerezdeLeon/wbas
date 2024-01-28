@@ -1,9 +1,10 @@
 import argparse
 import logging
 
+import config
 import utils
 from extraction.woldbank_api import search_for_serie, get_df, get_all_series_id
-from extraction.db_handler import upload_dataframe, create_schema
+from extraction.db_handler import upload_dataframe, create_schema, delete_table
 
 
 def main():
@@ -27,7 +28,7 @@ def main():
                                                    '(wbas download all')
 
     delete_parser = subparsers.add_parser('delete', help='Delete a serie from BD by id or its name')
-    delete_parser.add_argument('id', help='ID of the serie to delete')
+    delete_parser.add_argument('id', help='ID or name (In the BD) of the serie to delete')
 
     args = parser.parse_args()
 
@@ -41,7 +42,7 @@ def main():
         else:
             add_serie(args.id, args.rename)
     elif args.subcommand == 'delete':
-        delete_serie(args.series_id)
+        delete_serie(args.id)
     else:
         print("No command provided. Please use wbas -h to see a list of commands.")
 
@@ -57,6 +58,11 @@ def add_all_series():
     for index, row in df.iterrows():
         add_serie(row['id'])
     logging.info('Finished')
+
+
+def delete_serie(name: str):
+    logging.info(f'Deleting {config.schema_name}.{name} from BD')
+    delete_table(name)
 
 
 if __name__ == "__main__":
